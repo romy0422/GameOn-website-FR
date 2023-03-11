@@ -1,240 +1,198 @@
-//@ts-nocheck
-function editNav() {
-  var x = document.getElementById("myTopnav");
-  if (x.className === "topnav") {
-    x.className += " responsive";
-  } else {
-    x.className = "topnav";
-  }
+// DOM ELEMENTS FORM FIELDS VALIDATION
+const firstName = document.getElementById('first');
+const lastName = document.getElementById('last');
+const email = document.getElementById('email');
+const quantity = document.getElementById('quantity');
+const birthdate = document.getElementById('birthdate');
+const allLocations = document.getElementById('allLocations');
+const locations = document.querySelectorAll('#allLocations .checkbox-input');
+const checkbox1 = document.getElementById('checkbox1');
+const input = document.getElementsByClassName('text-control');
+const form = document.getElementById('form');
+const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ]+$/;
+
+// ------ FORM FIELDS VALIDATION ------ //
+// NAMES CHECK (FIRST NAME AND LAST NAME)
+function checkFirstName() {
+    if (firstName.value.trim().length < 2 || first.value.trim() === '' || !firstName.value.match(regex)) {
+        firstName.parentElement.setAttribute('data-error-visible', 'true');
+        firstName.style.border = '2px solid #e54858';
+        return false;
+    }
+    first.parentElement.setAttribute('data-error-visible', 'false');
+    first.style.border = 'solid #279e7a 0.19rem';
+    return true;
 }
 
-// DOM Elements
+function checkLastName() {
+    if (lastName.value.trim().length < 2 || last.value.trim() === "" || !lastName.value.match(regex)) {
+        lastName.parentElement.setAttribute('data-error-visible', 'true');
+        lastName.style.border = '2px solid #e54858';
+        return false;
+    }
+    last.parentElement.setAttribute('data-error-visible', 'false');
+    last.style.border = 'solid #279e7a 0.19rem';
+    return true;
+}
+
+// EMAIL CHECK
+function checkEmail() {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (email.value.trim().match(re)) {
+        email.parentElement.setAttribute('data-error-visible', 'false');
+        email.style.border = 'solid #279e7a 0.19rem';
+        return true;
+    }
+    email.parentElement.setAttribute('data-error-visible', 'true');
+    email.style.border = '2px solid #e54858';
+    return false;
+}
+
+// BIRTHDATE CHECK
+function checkBirthdate() {
+    if (birthdate.value.trim().length !== 10) {
+        birthdate.parentElement.setAttribute('data-error-visible', 'true');
+        birthdate.style.border = '2px solid #e54858';
+        return false;
+    }
+    birthdate.parentElement.setAttribute('data-error-visible', 'false');
+    birthdate.style.border = 'solid #279e7a 0.19rem';
+    return true;
+}
+
+// NUMBER OF TOURNAMENTS CHECK
+function checkTournamentsQuantity() {
+    if (quantity.value.trim().length === 0 || isNaN(quantity.value.trim()) === true || quantity.value.trim() < 0) {
+        quantity.parentElement.setAttribute('data-error-visible', 'true');
+        quantity.style.border = '2px solid #e54858';
+        return false;
+    }
+    quantity.parentElement.setAttribute('data-error-visible', 'false');
+    quantity.style.border = 'solid #279e7a 0.19rem';
+    return true;
+}
+
+// LOCATIONS CHECK
+function checkLocations() {
+    allLocations.setAttribute('data-error-visible', 'true');
+    for (let i = 0; i < locations.length; i++) {
+        if (locations[i].checked) {
+            allLocations.setAttribute('data-error-visible', 'false');
+            return true;
+        }
+    }
+    return false;
+}
+
+// TERMS OF USE CHECK CHECK
+function checkCheckBox() {
+    if (checkbox1.checked === false) {
+        checkbox1.parentElement.setAttribute('data-error-visible', 'true');
+        return false;
+    }
+    checkbox1.parentElement.setAttribute('data-error-visible', 'false');
+    return true;
+}
+
+// FORM FIELDS EVENTS
+function formFieldsValidation(element, method, event) {
+    element.addEventListener(event, method);
+}
+formFieldsValidation(firstName, checkFirstName, 'focusout');
+formFieldsValidation(lastName, checkLastName, 'focusout');
+formFieldsValidation(email, checkEmail, 'focusout');
+formFieldsValidation(birthdate, checkBirthdate, 'focusout');
+formFieldsValidation(quantity, checkTournamentsQuantity, 'focusout');
+formFieldsValidation(allLocations, checkLocations, 'change');
+formFieldsValidation(checkbox1, checkCheckBox, 'change');
+
+// FOR ALL FIELDS VALIDATION
+function forAllFieldsValidation() {
+    checkFirstName()
+    checkLastName()
+    checkEmail()
+    checkBirthdate()
+    checkTournamentsQuantity()
+    checkLocations()
+    checkCheckBox()
+}
+
+function formValidation() {
+    if (checkFirstName() === true &&
+        checkLastName() === true &&
+        checkEmail() === true &&
+        checkBirthdate() === true &&
+        checkTournamentsQuantity() === true &&
+        checkLocations() === true &&
+        checkCheckBox() === true) {
+        return true;
+    }
+    return false;
+}
+
+// SEND FORM
+form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (formValidation() == true) {
+        displayModalSubmit();
+        document.querySelector('form').reset();
+    } else {
+        forAllFieldsValidation();
+    }
+});
+
+// DOM ELEMENTS MODAL 
 const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
-const modalBtnClose = document.querySelector(".close");
 const formData = document.querySelectorAll(".formData");
-const form = document.getElementById("form");
-const validForm = document.querySelector(".validationForm");
+const closeBtn = document.getElementsByClassName('close');
 
-// Const récupérer les champs du formulaire
-const firstName = document.getElementById("first");
-const lastName = document.getElementById("last");
-const email = document.getElementById("email");
-const birthdate = document.getElementById("birthdate");
-const quantity = document.getElementById("quantity");
-const locationTournament = document.getElementsByName("location");
-const condition = document.getElementById("checkbox1");
-const validMessage = document.getElementById("validMessage");
-const btnSubmit = document.getElementById("btnSubmit");
-const btnValid = document.getElementById("btnValid");
-
-// Const pour les champs valide ou non
-const firstText = document.getElementById("firstText");
-const lastText = document.getElementById("lastText");
-const emailText = document.getElementById("emailText");
-const birthdateText = document.getElementById("birthdateText");
-const quantityText = document.getElementById("quantityText");
-const locationText = document.getElementById("locationText");
-const conditionText = document.getElementById("conditionText");
-
-
-// ----- Evènement pour ouvrir ou fermer le Formulaire -----
-
-// Open modal event
-modalBtn.forEach((btn) => btn.addEventListener("click", openModal));
-
-// Open modal form
-function openModal() {
-  modalbg.style.display = "block";                            // Ajout a modalbg un display : block; au css css pour le faire apparaitre
-};
-
-// Hidemodal form
-function hideModal() {
-  modalbg.style.display = "none";                             // Ajout a modalbg un display : none; au css pour le faire disparaitre
-};
-
-// Close modal form 
-modalBtnClose.addEventListener("click", function() {          // Évènement au click
-  modalbg.style.display = "none";                             // Pour fermer la modal avec le bouton close
-});
-
-// Création des RegEx
-let regExTypeText = new RegExp(
-  '^([A-Za-z]{2,20})?([-]{0,1})?([A-Za-z]{2,20})$'            // Une expression rationnelle qui prends en condition des lettres en Maj et Min entre 2 à 20 + - + 2 à 20 de plus ex : Jean-Pierre
-);
-let regExTypeEmail = new RegExp(                              // Une expression rationnelle qui prends en condition pour les emails
-  '^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$'
-);
-
-// ----- FONCTION GENERIQUE POUR FirstName + LastName + Email -----
-firstName.addEventListener('change', function() {
-  generiqueValidate(this,regExTypeText,"Veuillez rentrer deux caractères minimum", firstText, this);
-});
-
-lastName.addEventListener('change', function() {
-  generiqueValidate(this,regExTypeText,"Veuillez rentrer deux caractères minimum", lastText, this);
-});
-
-email.addEventListener('change', function() {
-  generiqueValidate(this,regExTypeEmail,"Veuillez rentrer un adresse email valide", emailText, this);
-});
-
-
-function generiqueValidate(input,regEx,msg,label,border) {    // Paramètres
-
-  let testValid = regEx.test(input.value);                    // Un test du RegEx en récupérant la valeur
-
-   if(testValid) {
-    label.innerHTML = "Champs Valide";
-    label.classList.remove('text-danger');
-    label.classList.add('text-succes');
-    border.classList.remove('border-danger');
-    border.classList.add('border-succes');
-    return true;
-   }else {
-    label.innerHTML = msg;
-    label.classList.remove('text-succes');
-    label.classList.add('text-danger');
-    border.classList.remove('border-succes');
-    border.classList.add('border-danger');
-    return false;
-   }
+// ------ DISPLAY MODAL ------ //
+// LAUNCH MODAL EVENTS
+modalBtn.forEach((btn) => btn.addEventListener('click', launchModal));
+// LAUNCH MODAL FORM
+function launchModal() {
+  modalbg.style.display = 'block';
 }
-
-// ----- ANNIVERSAIRE-----
-birthdate.addEventListener('change', function() {
-  validBirthdate(this);
-});
-
-const validBirthdate = function() {
-
-  if(! birthdate) {
-    birthdateText.innerHTML = "Veuillez entrer une date de naissance valide";
-    birthdateText.classList.remove('text-succes');
-    birthdateText.classList.add('text-danger');
-    birthdate.classList.remove('border-succes');
-    birthdate.classList.add('border-danger');
-    return false;
-  }else {
-    birthdateText.innerHTML = "Champs Valide";
-    birthdateText.classList.remove('text-danger');
-    birthdateText.classList.add('text-succes');
-    birthdate.classList.remove('border-danger');
-    birthdate.classList.add('border-succes');
-    return true;
-  }
-};
-
-// ----- NOMBRE DE TOURNOIS -----
-quantity.addEventListener('change', function() {
-  validQuantity(this);
-});
-
-const validQuantity = function() {
-  if(quantity.value === 0 || quantity.value < 0) {       // Si la valeur est égale à 0 ou si la valeur est supérieure à 0
-    quantityText.innerHTML = "Merci d'indiquer le nombre de tournois";
-    quantityText.classList.remove('text-succes');
-    quantityText.classList.add('text-danger');
-    quantity.classList.remove('border-succes');
-    quantity.classList.add('border-danger');
-    return false;
-  }else if(quantity.value > 50) {
-    quantityText.innerHTML = "Nous n'avons pas organisé autant de tournois !";
-    quantityText.classList.remove('text-succes');
-    quantityText.classList.add('text-danger');
-    quantity.classList.remove('border-succes');
-    quantity.classList.add('border-danger');
-    return false;
-  }else {
-    quantityText.innerHTML = "Champs Valide";
-    quantityText.classList.remove('text-danger');
-    quantityText.classList.add('text-succes');
-    quantity.classList.remove('border-danger');
-    quantity.classList.add('border-succes');
-    return true;
-  }
-};
-
-// ----- VILLES -----
-
-// Fonctions pour les lieux de tournois si d'autres villes sont ajoutés dans le futur
-function verifLocationTournament() {
-  let locTournamentCheck = false; 
-  for(let i = 0; i < locationTournament.length; i++) {
-    const isCheck = locationTournament[i].checked;
-    if(isCheck) {
-      locTournamentCheck = true;
-      return true;
-    }
-  }
-  return false;
+// CLOSE MODAL FORM
+function closeModal() {
+  modalbg.style.display = 'none';
 }
+closeBtn[0].addEventListener('click', closeModal);
 
-locationTournament.forEach((checkedBoxInput) => checkedBoxInput.addEventListener('change', function() {
-  validLocationTournament(); 
-}));
-
-function validLocationTournament() {
-  if(! verifLocationTournament()) {
-      locationText.innerHTML = "Merci de cocher une ville";
-      locationText.classList.remove('text-succes');
-      locationText.classList.add('text-danger');
-      return false;
+// ------ DISPLAY NAV RESPONSIVE ------ //
+// EDIT NAV
+function editNav() {
+  var x = document.getElementById('myTopnav');
+  if (x.className === 'topnav') {
+    x.className += ' responsive';
   } else {
-      locationText.innerHTML = "Champs valide";
-      locationText.classList.remove('text-danger');
-      locationText.classList.add('text-succes');
-      return true;
+    x.className = 'topnav';
   }
 }
 
+// DOM ELEMENTS SUBMITTED CONFIRMATION
+const modalSubmit = document.getElementsByClassName('container-confirmation-submit');
+const closeModalSubmit = document.getElementsByClassName('close-modal-submit');
+const closeBtnConfirmation = document.getElementById('close-btn-confirmation');
 
-// ----- CONDITIONS -----
-condition.addEventListener('change', function() {
-  validCondition(this); 
-});
-
-// Vérifie si les conditions sont biens cochées ou non
-const validCondition = function() {
-  if(condition.checked == false ) {                  
-    conditionText.innerHTML = "Merci d'accepter les conditions d'utilisations";
-    conditionText.classList.remove('text-succes');
-    conditionText.classList.add('text-danger');
-    return false;
-  }else {
-    conditionText.innerHTML = "Champs Valide";
-    conditionText.classList.remove('text-danger');
-    conditionText.classList.add('text-succes');
-    return true;
-  }
-};
-
-//----- BTN VALIDATION -----
-function openRemerciments() {
-  form.style.display = "none";
-  validForm.style.display = "flex";
-  validMessage.innerHTML = "Merci pour votre inscription";
-};
-
-function validate() {
-  // Condition qui vérifie si tous les autres conditions retourne true
-  if (generiqueValidate(firstName, regExTypeText, "firstname error", firstText, firstName)
-  && generiqueValidate(lastName, regExTypeText, "lastname error", lastText, lastName)
-  && generiqueValidate(email, regExTypeEmail, "email error", emailText, email)
-  && validBirthdate(birthdate) 
-  && validQuantity(quantity) 
-  && validLocationTournament()
-  && validCondition(condition)) {
-
-    openRemerciments();
-
-  }else {
-    alert("Merci de remplir correctement votre inscription");
-  }
+// ------ SUBMITTED CONFIRMATION ------ //
+// DISPLAY MODAL SUBMIT
+function displayModalSubmit() {
+    modalbg.style.display = 'none';
+    modalSubmit[0].style.display = 'flex';
 }
 
-//----- BTN SUBMIT -----
+// CLOSE SUBMIT
+function closeSubmit() {
+    modalSubmit[0].style.display = 'none';
+    first.style.border = 'none';
+    last.style.border = 'none';
+    email.style.border = 'none';
+    birthdate.style.border = 'none';
+    quantity.style.border = 'none';
+}
 
-btnValid.addEventListener("click", function() { 
-  window.location.reload();
-});
+// EVENT CLOSE MODAL SUBMIT
+closeModalSubmit[0].addEventListener('click', closeSubmit);
+closeBtnConfirmation.addEventListener('click', closeSubmit);
